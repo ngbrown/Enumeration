@@ -6,6 +6,7 @@ using System.Reflection;
 namespace Headspring
 {
     [Serializable]
+    [DebuggerDisplay("{DisplayName} - {Value}")]
     public abstract class Enumeration : IComparable
     {
         readonly string _displayName;
