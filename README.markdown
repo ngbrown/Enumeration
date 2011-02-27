@@ -53,9 +53,9 @@
 	
     public class Calculation : Enumeration
     {
-        public static Calculation Add = new Calculation(1, "Add", (right, left) => right + left);
-        public static Calculation Subtract = new Calculation(2, "Subtract", (right, left) => right - left);
-        public static Calculation Multiply = new Calculation(3, "Multiply", (right, left) => right * left);
+        public static Calculation Add = new Calculation(1, "Add", (left, right) => left + right);
+        public static Calculation Subtract = new Calculation(2, "Subtract", (left, right) => left - right);
+        public static Calculation Multiply = new Calculation(3, "Multiply", (left, right) => left * right);
         public Calculation() { }
 
         public Calculation(int value, string displayName, Func<int, int, int> calculation)
