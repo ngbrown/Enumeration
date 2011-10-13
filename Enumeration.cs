@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
@@ -8,12 +7,13 @@ namespace Headspring
 {
     [Serializable]
     [DebuggerDisplay("{DisplayName} - {Value}")]
-    public abstract class Enumeration : IComparable
+    public abstract class Enumeration<TEnumeration> : IComparable<TEnumeration>, IEquatable<TEnumeration> 
+        where TEnumeration : Enumeration<TEnumeration>
     {
         readonly string _displayName;
         readonly int _value;
-
-        protected Enumeration() {}
+        
+        private static Lazy<TEnumeration[]> _enumerations = new Lazy<TEnumeration[]>(GetEnumerations);
 
         protected Enumeration(int value, string displayName)
         {
@@ -31,100 +31,84 @@ namespace Headspring
             get { return _displayName; }
         }
 
-        public virtual int CompareTo(object other)
+        public int CompareTo(TEnumeration other)
         {
-            return Value.CompareTo(((Enumeration) other).Value);
+            return Value.CompareTo(other.Value);
         }
 
-        public override string ToString()
+        public override sealed string ToString()
         {
             return DisplayName;
         }
 
-        public static IEnumerable<T> GetAll<T>() where T : Enumeration, new()
+        public static TEnumeration[] GetAll()
         {
-            Type type = typeof (T);
-            FieldInfo[] fields = type.GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly);
-
-            foreach (var info in fields)
-            {
-                var instance = new T();
-                var locatedValue = info.GetValue(instance) as T;
-
-                if (locatedValue != null)
-                {
-                    yield return locatedValue;
-                }
-            }
+            return _enumerations.Value;
         }
 
-        public static IEnumerable<Enumeration> GetAll(Type type)
+        private static TEnumeration[] GetEnumerations()
         {
-            FieldInfo[] fields = type.GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly);
-            var listItems = new List<Enumeration>();
-
-            foreach (var info in fields)
-            {
-                object instance = Activator.CreateInstance(type);
-                listItems.Add((Enumeration) info.GetValue(instance));
-            }
-
-            return listItems.ToArray();
+            Type enumerationType = typeof (TEnumeration);
+            return enumerationType
+                .GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly)
+                .Where(info => enumerationType.IsAssignableFrom(info.FieldType))
+                .Select(info => info.GetValue(null))
+                .Cast<TEnumeration>()
+                .ToArray();
         }
 
         public override bool Equals(object obj)
         {
-            var otherValue = obj as Enumeration;
+            return Equals(obj as TEnumeration);
+        }
 
-            if (otherValue == null)
-            {
-                return false;
-            }
-
-            bool typeMatches = GetType().Equals(obj.GetType());
-            bool valueMatches = _value.Equals(otherValue.Value);
-
-            return typeMatches && valueMatches;
+        public bool Equals(TEnumeration other)
+        {
+            return other != null && Value.Equals(other.Value);
         }
 
         public override int GetHashCode()
         {
-            return _value.GetHashCode();
+            return Value.GetHashCode();
         }
 
-        public static T FromValue<T>(int value) where T : Enumeration, new()
+        public static TEnumeration FromInt32(int value)
         {
-            T matchingItem = Parse<T, int>(value, "value", item => item.Value == value);
-            return matchingItem;
+            return Parse(value, "value", item => item.Value == value);
         }
 
-        public static T FromDisplayName<T>(string displayName) where T : Enumeration, new()
+        public static TEnumeration Parse(string displayName) 
         {
-            T matchingItem = Parse<T, string>(displayName, "display name", item => item.DisplayName == displayName);
-            return matchingItem;
+            return Parse(displayName, "display name", item => item.DisplayName == displayName);
         }
 
-        static T Parse<T, K>(K value, string description, Func<T, bool> predicate) where T : Enumeration, new()
+        static bool TryParse(Func<TEnumeration, bool> predicate, out TEnumeration result)
         {
-            T matchingItem = GetAll<T>().FirstOrDefault(predicate);
+            result = GetAll().FirstOrDefault(predicate);
+            return result != null;
+        }
 
-            if (matchingItem == null)
+        private static TEnumeration Parse(object value, string description, Func<TEnumeration, bool> predicate)
+        {
+            TEnumeration result;
+
+            if (!TryParse(predicate, out result))
             {
-                string message = string.Format("'{0}' is not a valid {1} in {2}", value, description, typeof (T));
-                throw new ApplicationException(message);
+                string message = string.Format("'{0}' is not a valid {1} in {2}", value, description, typeof (TEnumeration));
+                throw new ArgumentException(message, "value");
             }
 
-            return matchingItem;
+            return result;
         }
 
-        public static Enumeration FromValueOrDefault(Type listItemType, int listItemValue)
+        public static bool TryFromInt32(int listItemValue, out TEnumeration result)
         {
-            return GetAll(listItemType).SingleOrDefault(e => e.Value == listItemValue);
+            return TryParse(e => e.Value == listItemValue, out result);
         }
 
-        public static Enumeration FromDisplayNameOrDefault(Type listItemType, string displayName)
+        public static bool TryParse(string displayName, out TEnumeration result)
         {
-            return GetAll(listItemType).SingleOrDefault(e => e.DisplayName == displayName);
+            return TryParse(e => e.DisplayName == displayName, out result);
         }
     }
 }
