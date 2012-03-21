@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<package>
+    <metadata>
+        <id>Enumeration</id>
+        <version>1.0.3</version>
+        <authors>Headspring</authors>
+        <owners>Headspring</owners>
+        <licenseUrl>https://github.com/HeadspringLabs/Enumeration/blob/master/content/Headspring/LICENSE.txt</licenseUrl>
+        <projectUrl>https://github.com/HeadspringLabs/Enumeration</projectUrl>
+        <iconUrl>https://bitbucket-assetroot.s3.amazonaws.com/c/photos/2010/May/14/spray_avatar.png</iconUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>A utility class. Common uses include Java-like enumerations, dispatch table, flyweight, and drop-down list items/select options.</description>
+        <tags>utility enumeration</tags>
+    </metadata>
+</package>
