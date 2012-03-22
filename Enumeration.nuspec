@@ -2,7 +2,7 @@
 <package>
     <metadata>
         <id>Enumeration</id>
-        <version>1.0.3</version>
+        <version>1.0.4</version>
         <authors>Headspring</authors>
         <owners>Headspring</owners>
         <licenseUrl>https://github.com/HeadspringLabs/Enumeration/blob/master/content/Headspring/LICENSE.txt</licenseUrl>
@@ -12,4 +12,8 @@
         <description>A utility class. Common uses include Java-like enumerations, dispatch table, flyweight, and drop-down list items/select options.</description>
         <tags>utility enumeration</tags>
     </metadata>
+    <files>
+        <file src="Enumeration.cs" target="content\Headspring\Enumeration.cs" />
+        <file src="LICENSE.txt" target="content\Headspring\LICENSE.txt" />
+    </files>
 </package>
