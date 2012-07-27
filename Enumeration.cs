@@ -102,6 +102,11 @@ namespace Headspring
             return result;
         }
 
+        public static bool TryParse(TValue value, out TEnumeration result)
+        {
+            return TryParse(e => e.Value.Equals(value), out result);
+        }
+
         public static bool TryParse(string displayName, out TEnumeration result)
         {
             return TryParse(e => e.DisplayName == displayName, out result);
