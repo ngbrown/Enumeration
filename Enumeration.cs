@@ -7,7 +7,7 @@ namespace Headspring
 {
     [Serializable]
     [DebuggerDisplay("{DisplayName} - {Value}")]
-    public abstract class Enumeration<TEnumeration> : EnumerationGeneric<TEnumeration, int>
+    public abstract class Enumeration<TEnumeration> : Enumeration<TEnumeration, int>
         where TEnumeration : Enumeration<TEnumeration>
     {
         protected Enumeration(int value, string displayName)
