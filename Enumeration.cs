@@ -84,13 +84,38 @@ namespace Headspring
 
         private static TEnumeration[] GetEnumerations()
         {
-            Type enumerationType = typeof(TEnumeration);
-            return enumerationType
+            var enumerationType = typeof (TEnumeration);
+            var enumerations = enumerationType
                 .GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly)
                 .Where(info => enumerationType.IsAssignableFrom(info.FieldType))
                 .Select(info => info.GetValue(null))
                 .Cast<TEnumeration>()
                 .ToArray();
+            CheckForDuplicates(enumerations);
+            return enumerations;
+        }
+
+        private static void CheckForDuplicates(IList<TEnumeration> enumerations)
+        {
+            var enumValueDupes = enumerations.GroupBy(x => x.Value, x => x).Where(x => x.Count() > 1).ToArray();
+            if (enumValueDupes.Any())
+            {
+                var message = enumValueDupes.Aggregate(
+                    new StringBuilder("For enum " + typeof (TEnumeration).Name),
+                    (sb, grp) => sb.AppendFormat(" Value {0} is duplicated on {1};", grp.Key, string.Join(", ", grp.Select(x => x.DisplayName))));
+                message.Replace(';', '.', message.Length - 1, 1);
+                throw new Exception(message.ToString());
+            }
+
+            var enumDisplayNameDupes = enumerations.GroupBy(x => x.DisplayName, x => x).Where(x => x.Count() > 1).ToArray();
+            if (enumDisplayNameDupes.Any())
+            {
+                var message = enumDisplayNameDupes.Aggregate(
+                    new StringBuilder("For enum " + typeof (TEnumeration).Name),
+                    (sb, grp) => sb.AppendFormat(" DisplayName {0} is duplicated for values {1};", grp.Key, string.Join(", ", grp.Select(x => x.Value))));
+                message.Replace(';', '.', message.Length - 1, 1);
+                throw new Exception(message.ToString());
+            }
         }
 
         public override bool Equals(object obj)
