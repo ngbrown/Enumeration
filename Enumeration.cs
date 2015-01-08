@@ -100,7 +100,7 @@ namespace Headspring
 
         public bool Equals(TEnumeration other)
         {
-            return other != null && Value.Equals(other.Value);
+            return other != null && ValueEquals(other.Value);
         }
 
         public override int GetHashCode()
@@ -149,12 +149,17 @@ namespace Headspring
 
         public static bool TryParse(TValue value, out TEnumeration result)
         {
-            return TryParse(e => e.Value.Equals(value), out result);
+            return TryParse(e => e.ValueEquals(value), out result);
         }
 
         public static bool TryParse(string displayName, out TEnumeration result)
         {
             return TryParse(e => e.DisplayName == displayName, out result);
+        }
+
+        protected virtual bool ValueEquals(TValue value)
+        {
+            return Value.Equals(value);
         }
     }
 }
