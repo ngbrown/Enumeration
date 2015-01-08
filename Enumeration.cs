@@ -34,12 +34,13 @@ namespace Headspring
         where TEnumeration : Enumeration<TEnumeration, TValue>
         where TValue : IComparable
     {
+        private static readonly Lazy<TEnumeration[]> Enumerations = new Lazy<TEnumeration[]>(GetEnumerations);
+
         [DataMember(Order = 1)]
         readonly string _displayName;
+
         [DataMember(Order = 0)]
         readonly TValue _value;
-
-        private static Lazy<TEnumeration[]> _enumerations = new Lazy<TEnumeration[]>(GetEnumerations);
 
         protected Enumeration(TValue value, string displayName)
         {
@@ -79,7 +80,7 @@ namespace Headspring
 
         public static TEnumeration[] GetAll()
         {
-            return _enumerations.Value;
+            return Enumerations.Value;
         }
 
         private static TEnumeration[] GetEnumerations()
