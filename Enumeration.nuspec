@@ -11,6 +11,9 @@
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <description>A utility class. Common uses include Java-like enumerations, dispatch table, flyweight, and drop-down list items/select options.</description>
         <tags>utility enumeration</tags>
+        <frameworkAssemblies>
+            <frameworkAssembly assemblyName="System.Runtime.Serialization"  />
+        </frameworkAssemblies>
     </metadata>
     <files>
         <file src="Enumeration.cs" target="content\Headspring\Enumeration.cs" />
