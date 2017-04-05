@@ -46,7 +46,7 @@ namespace Headspring
         {
             if (value == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException(nameof(value));
             }
 
             _value = value;
