@@ -116,7 +116,7 @@ namespace Headspring
 
         public static TEnumeration FromValue(TValue value)
         {
-            return Parse(value, "value", item => item.Value.Equals(value));
+            return Parse(value, "value", item => item.ValueEquals(value));
         }
 
         public static TEnumeration Parse(string displayName)
@@ -124,7 +124,7 @@ namespace Headspring
             return Parse(displayName, "display name", item => item.DisplayName == displayName);
         }
 
-        static bool TryParse(Func<TEnumeration, bool> predicate, out TEnumeration result)
+        private static bool TryParse(Func<TEnumeration, bool> predicate, out TEnumeration result)
         {
             result = GetAll().FirstOrDefault(predicate);
             return result != null;
